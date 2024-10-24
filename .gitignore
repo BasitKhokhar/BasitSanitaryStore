@@ -74,6 +74,7 @@ web_modules/
 
 # dotenv environment variable files
 .env
+ HEAD
 .env.*
 !**/.env.example
 
@@ -83,6 +84,12 @@ firebase-adminsdk.json
 # Ignore other credential-related files
 config/*.json
 config/credentials.json
+
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+ b85ff8f6859d6d0663107846f0894b540fed1239
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -133,6 +140,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+<<<<<<< HEAD
 
 # Firebase Admin SDK credentials
 firebase-admin-keys.json
@@ -145,3 +153,5 @@ config/private_keys/
 *.pem
 *.key
 *.crt
+=======
+>>>>>>> b85ff8f6859d6d0663107846f0894b540fed1239
