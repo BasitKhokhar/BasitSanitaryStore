@@ -7,6 +7,11 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    // plugin for scrollbar //
+    require('tailwind-scrollbar'),
+    // If you want to add hover and rounded variants
+    require('tailwind-scrollbar')({ nocompatible: true }),
+  ],
 }
 
