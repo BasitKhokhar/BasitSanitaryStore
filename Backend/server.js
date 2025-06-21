@@ -19,14 +19,14 @@ const { LogoImage, HomeParagraph, User, SliderImage, Categories, Subcategories, 
 
 
 // firebase attachemnt//
-const admin = require('firebase-admin');
-const adminCredentials = require('./basit-b2712-firebase-adminsdk-jrij1-16a873b97c');
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(adminCredentials),
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-});
-const bucket = admin.storage().bucket();
+// const admin = require('firebase-admin');
+// const adminCredentials = require('./basit-b2712-firebase-adminsdk-jrij1-16a873b97c');
+// // Initialize Firebase Admin SDK
+// admin.initializeApp({
+//   credential: admin.credential.cert(adminCredentials),
+//   storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+// });
+// const bucket = admin.storage().bucket();
 
 // sequlize model based APIS start//
 // just to chek seaqulzie is connected or not//
