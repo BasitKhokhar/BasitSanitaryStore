@@ -42,7 +42,15 @@ sequelize.sync({ alter: true })
   .then(() => console.log("✅ Database synchronized successfully."))
   .catch(err => console.error("❌ Error synchronizing the database:", err));
 
-  
+  app.get("/test-db", (req, res) => {
+  db.query("SELECT 1", (err, result) => {
+    if (err) {
+      console.error("DB test query failed:", err);
+      return res.status(500).send("❌ Database NOT connected");
+    }
+    res.send("✅ Database is connected");
+  });
+});
 // logo image API//
 app.get('/logo_image', async (req, res) => {
   try {
