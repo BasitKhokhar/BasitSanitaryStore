@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 // ipmorting all sequelize models
 const { sequelize } = require('./models');
 const { LogoImage, HomeParagraph, User, SliderImage, Categories, Subcategories, Products,
-  TrendingProduct,OnSaleProduct, Homevideos,CustomerSupportOption,Brand,About,AboutImage,AboutUs,AboutMission,
-  PaymentMethod,Service,MapImage,Plumber,ContactForm,Cart } = require('./models');
+  TrendingProduct, OnSaleProduct, Homevideos, CustomerSupportOption, Brand, About, AboutImage, AboutUs, AboutMission,
+  PaymentMethod, Service, MapImage, Plumber, ContactForm, Cart } = require('./models');
 
 
 // firebase attachemnt//
@@ -38,23 +38,25 @@ sequelize.authenticate()
     console.error('❌ Unable to connect to the database:', err);
   });
 // Ensures table structure is updated without losing data
-sequelize.sync({ alter: true })  
+sequelize.sync({ alter: true })
   .then(() => console.log("✅ Database synchronized successfully."))
   .catch(err => console.error("❌ Error synchronizing the database:", err));
 
-  app.get("/test-db", (req, res) => {
-  db.query("SELECT 1", (err, result) => {
-    if (err) {
-      console.error("DB test query failed:", err);
-      return res.status(500).send("❌ Database NOT connected");
-    }
-    res.send("✅ Database is connected");
-  });
+app.get("/test-db", async (req, res) => {
+  try {
+    await sequelize.authenticate(); // Checks DB connection
+    console.log("✅ Connection has been established successfully.");
+    res.send("✅ Database is connected via Sequelize");
+  } catch (error) {
+    console.error("❌ Unable to connect to the database:", error);
+    res.status(500).send("❌ Database NOT connected");
+  }
 });
+
 // logo image API//
 app.get('/logo_image', async (req, res) => {
   try {
-    const logos = await LogoImage.findAll({ where: { id: 1 }});
+    const logos = await LogoImage.findAll({ where: { id: 1 } });
     res.json(logos);
   } catch (error) {
     console.error(error);
@@ -85,7 +87,7 @@ app.get('/home_paragraphs', async (req, res) => {
 app.post('/signup', async (req, res) => {
   try {
     const { name, email, password, phone, city } = req.body;
-    console.log("signup data coming from frontend",name, email, password, phone, city)
+    console.log("signup data coming from frontend", name, email, password, phone, city)
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
@@ -186,25 +188,25 @@ app.get('/', (req, res) => {
 // for contact Form //
 app.post('/submit', async (req, res) => {
   try {
-      const { name, email, phone, description } = req.body;
-      if (!name || !email || !phone || !description) {
-          return res.status(400).json({ error: "All fields are required" });
-      }
-      const newEntry = await ContactForm.create({
-          name,
-          email,
-          phone,
-          description,
-      });
-      res.status(201).json({ message: "Form data submitted successfully", data: newEntry });
+    const { name, email, phone, description } = req.body;
+    if (!name || !email || !phone || !description) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+    const newEntry = await ContactForm.create({
+      name,
+      email,
+      phone,
+      description,
+    });
+    res.status(201).json({ message: "Form data submitted successfully", data: newEntry });
   } catch (error) {
-      console.error("Error inserting data:", error);
-      res.status(500).json({ error: "Server error" });
+    console.error("Error inserting data:", error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 // checkout form API //
 app.post('/checkout_form', (req, res) => {
-  const { Fname, email, phone, city, address,receipt_url } = req.body;
+  const { Fname, email, phone, city, address, receipt_url } = req.body;
   const sql = `INSERT INTO checkout_form (Fname, email, phone, city, address, receipt_url) VALUES ( ?, ?, ?, ?, ?, ?)`;
   db.query(sql, [Fname, email, phone, city, address, receipt_url], (err, result) => {
     if (err) {
@@ -217,76 +219,76 @@ app.post('/checkout_form', (req, res) => {
 // 1. POST /cart: Add product to the cart
 app.post('/cart', async (req, res) => {
   try {
-      const { user_id, id, quantity, name, price, image_url, selectedColor } = req.body;
-      // Check if the product is already in the cart
-      const existingCartItem = await Cart.findOne({ where: { user_id, id } });
-      if (existingCartItem) {
-          // If product exists, update quantity
-          await existingCartItem.update({ quantity: existingCartItem.quantity + quantity });
-          return res.json({ message: "Cart updated successfully", cart: existingCartItem });
-      } else {
-          // If product doesn't exist, insert a new entry
-          const newCartItem = await Cart.create({ user_id, id, quantity, name, price, image_url, selectedColor });
-          return res.json({ message: "Product added to cart successfully", cart: newCartItem });
-      }
+    const { user_id, id, quantity, name, price, image_url, selectedColor } = req.body;
+    // Check if the product is already in the cart
+    const existingCartItem = await Cart.findOne({ where: { user_id, id } });
+    if (existingCartItem) {
+      // If product exists, update quantity
+      await existingCartItem.update({ quantity: existingCartItem.quantity + quantity });
+      return res.json({ message: "Cart updated successfully", cart: existingCartItem });
+    } else {
+      // If product doesn't exist, insert a new entry
+      const newCartItem = await Cart.create({ user_id, id, quantity, name, price, image_url, selectedColor });
+      return res.json({ message: "Product added to cart successfully", cart: newCartItem });
+    }
   } catch (error) {
-      console.error("Error managing cart:", error);
-      return res.status(500).json({ message: "Server error", error });
+    console.error("Error managing cart:", error);
+    return res.status(500).json({ message: "Server error", error });
   }
 });
 
 // GET /cart: Retrieve cart items for a specific user
 app.get('/cart/:user_id', async (req, res) => {
   try {
-      const { user_id } = req.params;
-      // Fetch all cart items for the given user_id
-      const cartItems = await Cart.findAll({ where: { user_id } });
-      if (!cartItems.length) {
-          return res.status(404).json({ message: "No items found in the cart" });
-      }
-      res.status(200).json(cartItems);
+    const { user_id } = req.params;
+    // Fetch all cart items for the given user_id
+    const cartItems = await Cart.findAll({ where: { user_id } });
+    if (!cartItems.length) {
+      return res.status(404).json({ message: "No items found in the cart" });
+    }
+    res.status(200).json(cartItems);
   } catch (error) {
-      console.error("Error fetching cart items:", error);
-      return res.status(500).json({ message: "Failed to fetch cart items", error });
+    console.error("Error fetching cart items:", error);
+    return res.status(500).json({ message: "Failed to fetch cart items", error });
   }
 });
 // PUT /cart/:id: Update the quantity of a product in the cart for a specific user
 app.put('/cart/:id', async (req, res) => {
   try {
-      const { quantity, user_id } = req.body;
-      const cart_id = req.params.id;
-      // Validate input data
-      if (!quantity || !user_id || !cart_id) {
-          return res.status(400).json({ message: 'Invalid data provided.' });
-      }
-      // Find the cart item
-      const cartItem = await Cart.findOne({ where: { cart_id, user_id } });
-      if (!cartItem) {
-          return res.status(404).json({ message: 'Cart item not found.' });
-      }
-      // Update the quantity
-      await cartItem.update({ quantity });
-      res.status(200).json({ message: 'Quantity updated successfully.' });
+    const { quantity, user_id } = req.body;
+    const cart_id = req.params.id;
+    // Validate input data
+    if (!quantity || !user_id || !cart_id) {
+      return res.status(400).json({ message: 'Invalid data provided.' });
+    }
+    // Find the cart item
+    const cartItem = await Cart.findOne({ where: { cart_id, user_id } });
+    if (!cartItem) {
+      return res.status(404).json({ message: 'Cart item not found.' });
+    }
+    // Update the quantity
+    await cartItem.update({ quantity });
+    res.status(200).json({ message: 'Quantity updated successfully.' });
   } catch (error) {
-      console.error("Error updating cart item:", error);
-      res.status(500).json({ message: 'Error updating cart item', error });
+    console.error("Error updating cart item:", error);
+    res.status(500).json({ message: 'Error updating cart item', error });
   }
 });
 // DELETE /cart/:id: Remove a product from the cart for a specific user
 app.delete('/cart/:user_id/:cart_id', async (req, res) => {
   try {
-      const { user_id, cart_id } = req.params;
-      // Find the cart item
-      const cartItem = await Cart.findOne({ where: { user_id, cart_id } });
-      if (!cartItem) {
-          return res.status(404).json({ message: 'Cart item not found.' });
-      }
-      // Delete the cart item
-      await cartItem.destroy();
-      res.status(200).json({ message: 'Item removed successfully.' });
+    const { user_id, cart_id } = req.params;
+    // Find the cart item
+    const cartItem = await Cart.findOne({ where: { user_id, cart_id } });
+    if (!cartItem) {
+      return res.status(404).json({ message: 'Cart item not found.' });
+    }
+    // Delete the cart item
+    await cartItem.destroy();
+    res.status(200).json({ message: 'Item removed successfully.' });
   } catch (error) {
-      console.error("Error deleting cart item:", error);
-      res.status(500).json({ message: 'Failed to remove item from cart', error });
+    console.error("Error deleting cart item:", error);
+    res.status(500).json({ message: 'Failed to remove item from cart', error });
   }
 });
 //  this API is for fetching all products//
@@ -315,109 +317,109 @@ app.get("/trending_products", async (req, res) => {
 // APi for Onsale //
 app.get("/onsale_products", async (req, res) => {
   try {
-      const products = await OnSaleProduct.findAll(); 
-      res.json(products);
+    const products = await OnSaleProduct.findAll();
+    res.json(products);
   } catch (error) {
-      console.error("Error fetching on-sale products:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching on-sale products:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 //  About page realted APIS //
 app.get("/about", async (req, res) => {
   try {
-      const aboutData = await About.findAll();
-      res.json(aboutData);
+    const aboutData = await About.findAll();
+    res.json(aboutData);
   } catch (error) {
-      console.error("Error fetching about data:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching about data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 app.get("/about_image", async (req, res) => {
   try {
-      const images = await AboutImage.findAll(); 
-      res.json(images);
+    const images = await AboutImage.findAll();
+    res.json(images);
   } catch (error) {
-      console.error("Error fetching about_image records:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching about_image records:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 app.get("/aboutus", async (req, res) => {
   try {
-      const aboutData = await AboutUs.findAll(); 
-      res.json(aboutData);
+    const aboutData = await AboutUs.findAll();
+    res.json(aboutData);
   } catch (error) {
-      console.error("Error fetching aboutus data:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching aboutus data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 app.get("/about_mission", async (req, res) => {
   try {
-      const missions = await AboutMission.findAll();
-      res.json(missions);
+    const missions = await AboutMission.findAll();
+    res.json(missions);
   } catch (error) {
-      console.error("Error fetching missions:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching missions:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 // Services page related APIs //
 app.get("/services", async (req, res) => {
   try {
-      const services = await Service.findAll(); 
-      res.json(services);
+    const services = await Service.findAll();
+    res.json(services);
   } catch (error) {
-      console.error("Error fetching services:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching services:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 app.get("/plumbers", async (req, res) => {
   try {
-      const plumbers = await Plumber.findAll();
-      res.json(plumbers);
+    const plumbers = await Plumber.findAll();
+    res.json(plumbers);
   } catch (error) {
-      console.error("Error fetching plumbers:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching plumbers:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 app.get("/map_image", async (req, res) => {
   try {
-      const mapImages = await MapImage.findAll(); 
-      res.json(mapImages);
+    const mapImages = await MapImage.findAll();
+    res.json(mapImages);
   } catch (error) {
-      console.error("Error fetching map images:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching map images:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 // Brands APis //
 app.get("/brands", async (req, res) => {
   try {
-      const brands = await Brand.findAll(); 
-      res.json(brands);
+    const brands = await Brand.findAll();
+    res.json(brands);
   } catch (error) {
-      console.error("Error fetching brands:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching brands:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 // API for customersupport options
 app.get("/customer_supportoptions", async (req, res) => {
   try {
-      const options = await CustomerSupportOption.findAll();
-      res.json(options);
+    const options = await CustomerSupportOption.findAll();
+    res.json(options);
   } catch (error) {
-      console.error("Error fetching customer support options:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching customer support options:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 // paymentMethods options API //
 app.get("/payment_methods", async (req, res) => {
   try {
-      const paymentMethods = await PaymentMethod.findAll(); 
-      res.json(paymentMethods);
+    const paymentMethods = await PaymentMethod.findAll();
+    res.json(paymentMethods);
   } catch (error) {
-      console.error("Error fetching payment methods:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error fetching payment methods:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
