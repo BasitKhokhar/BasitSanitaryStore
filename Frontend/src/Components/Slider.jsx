@@ -33,10 +33,10 @@ const ImageSlider = ({ sliderData }) => {
           </div>
         ))}
       </Slider>
-      <div className=' absolute top-[40%] left-[5%] z-10'>
+      <div className=' absolute top-[40%] left-[5%] z-[1]'>
         <TypingComponent />
       </div>
-      <div className=' bg-black max-h-[90vh] h-[90vh] w-full opacity-40 absolute top-0 left-0'>asasas</div>
+      <div className=' bg-black max-h-[90vh] h-[90vh] w-full opacity-40 absolute top-0 left-0'></div>
     </div>
   );
 };

@@ -26,7 +26,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen box-border p-0 m-0 overflow-hidden">
-        <Navbar userId={userId}/>
+        <Navbar userId={userId} className=" z-20"/>
         <div className="mt-8">
           <Routes>
             <Route path="/" element={<Home  loggedInUserId={userId}/> } />
@@ -35,7 +35,7 @@ function App() {
             <Route path="/services" element={<Services/>} />
             <Route path="/cart" element={<Cart/>} />
             <Route path="/contact" element={<Contact/>} />
-            <Route path='/checkout' element={<Checkout />} />
+            <Route path='/checkout' element={<Checkout />}/>
             {/* Dynamic Routes for Categories and Subcategories that will route on basis of ID */}
             <Route path="/category/:categoryId" element={<Subcategories/>}  />
             <Route path="/category/:categoryId/subcategory/:subcategoryId" element={<Products loggedInUserId={userId}/>}  />

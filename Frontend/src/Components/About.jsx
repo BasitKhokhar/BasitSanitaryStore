@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Loader from './Loader';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function About() {
 
   useEffect(() => {
@@ -21,10 +22,10 @@ export default function About() {
   useEffect(() => {
     setLoading(true);
     const apiEndpoints = [
-      { key: 'aboutMsgsData', url: 'http://localhost:5000/about' },
-      { key: 'aboutimageData', url: 'http://localhost:5000/about_image' },
-      { key: 'aboutusData', url: 'http://localhost:5000/aboutus' },
-      { key: 'aboutmissionData', url: 'http://localhost:5000/about_mission' }
+      { key: 'aboutMsgsData', url: `${API_BASE_URL}/about` },
+      { key: 'aboutimageData', url: `${API_BASE_URL}/about_image` },
+      { key: 'aboutusData', url: `${API_BASE_URL}/aboutus` },
+      { key: 'aboutmissionData', url: `${API_BASE_URL}/about_mission` }
     ];
     Promise.all(
       apiEndpoints.map((endpoint) =>
@@ -60,7 +61,7 @@ export default function About() {
         <div className='w-full sm:w-full md:w-full lg:w-2/4 mt-12'>
           { aboutdata.aboutimageData && aboutdata.aboutimageData.map((item) => {
               return (
-                <div className='h-[70vh]' key={item.id} data-aos="zoom-in">
+                <div className=' h-[50vh] lg:h-[70vh]' key={item.id} data-aos="zoom-in">
                   <img src={item.image_url} alt="" className=' w-full h-full rounded ' />
                 </div>
               )
@@ -101,7 +102,7 @@ export default function About() {
             return (
               <div key={items.id} >
                 <div className=' bg-[#AA6231] inline-block text-white px-5 py-3 font-bold my-6 rounded ' data-aos="fade-up">{items.Position}</div>
-                <div className='grid sm:grid-cols-1  md:grid-cols1 lg:grid-cols-2'>
+                <div className='grid gap-4 sm:grid-cols-1  md:grid-cols1 lg:grid-cols-2'>
                   <div className=' flex justify-center' data-aos="zoom-in">
                     <img key={items.id} src={items.image_url} alt="" className=' w-2/4 rounded border-gray-400 border p-3' />
                   </div>

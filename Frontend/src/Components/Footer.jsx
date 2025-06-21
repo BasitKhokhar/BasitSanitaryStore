@@ -19,7 +19,7 @@ export default function Footer() {
     FooterInfoData: [],
     socialIconsData: []
   });
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const apiEndpoints = [

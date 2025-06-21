@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const Login = ({ toggleSignupForm }) => {
   const [formData, setFormData] = useState({ 
     email: '',
     password: ''
    });
-
    const [emailError, setEmailError] = useState(false);
-  
    const handleChange = (e) => {
        const { name, value } = e.target;
        setFormData({
@@ -30,7 +28,7 @@ const Login = ({ toggleSignupForm }) => {
    };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:5000/login', {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),

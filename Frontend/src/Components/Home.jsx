@@ -12,6 +12,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import TypingComponent from './TypingComponent';
 import TrendingProducts from './TrendingProducts';
+import OnSaleProducts from './OnSaleProducts';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Home({ loggedInUserId }) {
   console.log("userid in Home:", loggedInUserId)
@@ -34,13 +36,13 @@ export default function Home({ loggedInUserId }) {
   useEffect(() => {
     setLoading(true);
     const apiEndpoints = [
-      { key: 'logoData', url: 'http://localhost:5000/logo_image' },
-      { key: 'homeParaData', url: 'http://localhost:5000/home_paragraphs' },
-      { key: 'sliderData', url: 'http://localhost:5000/sliderimages' },
-      { key: 'CategoryData', url: 'http://localhost:5000/categories' },
-      { key: 'brandsData', url: 'http://localhost:5000/brands' },
-      { key: 'customersupportData', url: 'http://localhost:5000/customer_supportoptions' },
-      { key: 'videosData', url: 'http://localhost:5000/home_videos' }
+      { key: 'logoData', url: `${API_BASE_URL}/logo_image` },
+      { key: 'homeParaData', url: `${API_BASE_URL}/home_paragraphs` },
+      { key: 'sliderData', url: `${API_BASE_URL}/sliderimages` },
+      { key: 'CategoryData', url: `${API_BASE_URL}/categories` },
+      { key: 'brandsData', url: `${API_BASE_URL}/brands` },
+      { key: 'customersupportData', url: `${API_BASE_URL}/customer_supportoptions` },
+      { key: 'videosData', url: `${API_BASE_URL}/home_videos` }
     ];
     Promise.all(
       apiEndpoints.map((endpoint) =>
@@ -82,7 +84,7 @@ export default function Home({ loggedInUserId }) {
                   <div className=' text-2xl font-bold'>{items.heading}</div>
                   <div>{items.description}</div>
                 </div>
-                <div className=' pl-10' data-aos="zoom-in">
+                <div className=' lg:pl-10 ' data-aos="zoom-in">
                   <img src={items.image_url} alt="" className=' w-full h-96 rounded' />
                 </div>
               </div>
@@ -96,6 +98,9 @@ export default function Home({ loggedInUserId }) {
       
       <div>
         <TrendingProducts loggedInUserId={loggedInUserId} />
+      </div>
+      <div>
+        <OnSaleProducts loggedInUserId={loggedInUserId} />
       </div>
       <div className='mt-12 mb-12'>
         {/* <h2 className="text-3xl font-bold text-center mb-4">Featured Videos</h2> */}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const FormComponent = () => {
     // for Loader state //
     const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const FormComponent = () => {
             return; 
         }
         setLoading(true);
-        fetch('http://localhost:5000/submit', {
+        fetch(`${API_BASE_URL}/submit`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

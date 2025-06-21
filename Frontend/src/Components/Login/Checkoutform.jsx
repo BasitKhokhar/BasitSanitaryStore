@@ -1,71 +1,99 @@
 import React, { useState } from 'react';
+import { storage } from '../firebase'; // Make sure your firebase.js is correctly exporting `storage`
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-export default function CheckoutForm() {
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+export default function CheckoutForm({ userId,shippingCost, finalTotal,cartItems }) {
+  console.log("data coming in checkout form", userId, shippingCost, finalTotal,cartItems )
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
     Fname: '',
-    Lname: '',
     email: '',
     phone: '',
     city: '',
     address: ''
   });
-
   const [emailError, setEmailError] = useState(false);
 
-  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value,
-    });
-
-    if (name === 'email') {
-      validateEmail(value);
-    }
+    }));
+    if (name === 'email') validateEmail(value);
   };
 
-  // Email validation function
   const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email === '') {
-      setEmailError(false);
-    } else {
-      setEmailError(!emailPattern.test(email));
+    setEmailError(email !== '' && !emailPattern.test(email));
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    setSelectedFile(file);
+
+    const storageRef = ref(storage, `WebOrders_receipts/${Date.now()}_${file.name}`);
+    try {
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setImageUrl(url);
+      console.log('✅ Uploaded image URL:', url);
+    } catch (error) {
+      console.error('❌ Image upload failed:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploading(false);
     }
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (emailError) {
       alert('Please enter a valid email address.');
       return;
     }
+
+    if (!imageUrl) {
+      alert('Please upload a receipt image before submitting.');
+      return;
+    }
+
     setLoading(true);
-    fetch('http://localhost:5000/checkout_form', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('Form submitted successfully!');
-          alert('Form submitted successfully!');
-        } else {
-          console.error('Error submitting form');
-          alert('Error Submitting Form');
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      })
-      .finally(() => {
-        setLoading(false);
+
+    const payload = {
+      ...formData,
+      receipt_url: imageUrl,userId, shippingCost, finalTotal,cartItems
+    };
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/checkout_form`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+
+      if (!res.ok) {
+        console.error('❌ Submission failed');
+        alert('Error submitting form');
+      } else {
+        alert('Form submitted successfully!');
+        setFormData({ Fname: '', email: '', phone: '', city: '', address: '' });
+        setImageUrl(null);
+        setSelectedFile(null);
+      }
+    } catch (err) {
+      console.error('❌ Network error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,34 +103,21 @@ export default function CheckoutForm() {
           <h1 className="text-3xl text-white">Delivery</h1>
         </div>
 
-        {/* First Name and Last Name */}
-        <div className="flex flex-col gap-4 mt-3 sm:flex-col md:flex-row lg:flex-row">
-          <div className="mb-4 w-full">
-            <label className="block text-sm font-bold mb-2 text-left" htmlFor="Fname">First Name:</label>
-            <input
-              type="text"
-              name="Fname"
-              value={formData.Fname}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
-          <div className="mb-4 w-full">
-            <label className="block text-sm font-bold mb-2 text-left" htmlFor="Lname">Last Name:</label>
-            <input
-              type="text"
-              name="Lname"
-              value={formData.Lname}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            />
-          </div>
+        {/* Name */}
+        <div className="mb-4 w-full">
+          <label className="block text-sm font-bold mb-2 text-left" htmlFor="Fname">Name:</label>
+          <input
+            type="text"
+            name="Fname"
+            value={formData.Fname}
+            onChange={handleChange}
+            required
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+          />
         </div>
 
         {/* Phone and Email */}
-        <div className="flex flex-col gap-4 mt-3 sm:flex-col md:flex-row lg:flex-row">
+        <div className="flex flex-col gap-4 mt-3 md:flex-row">
           <div className="mb-4 w-full">
             <label className="block text-sm font-bold mb-2 text-left" htmlFor="phone">Phone No:</label>
             <input
@@ -110,8 +125,8 @@ export default function CheckoutForm() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
             />
           </div>
           <div className="mb-4 w-full">
@@ -121,14 +136,14 @@ export default function CheckoutForm() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`shadow appearance-none border ${emailError ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
               required
+              className={`shadow appearance-none border ${emailError ? 'border-red-500' : 'border-gray-300'} rounded w-full py-2 px-3 text-gray-700`}
             />
           </div>
         </div>
 
         {/* City and Address */}
-        <div className="flex flex-col gap-4 mt-3 sm:flex-col md:flex-row lg:flex-row">
+        <div className="flex flex-col gap-4 mt-3 md:flex-row">
           <div className="mb-4 w-full">
             <label className="block text-sm font-bold mb-2 text-left" htmlFor="city">City:</label>
             <input
@@ -136,8 +151,8 @@ export default function CheckoutForm() {
               name="city"
               value={formData.city}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
             />
           </div>
           <div className="mb-4 w-full">
@@ -147,33 +162,37 @@ export default function CheckoutForm() {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               required
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
             />
           </div>
         </div>
 
-        {/* Description */}
+        {/* Upload Image */}
         <div className="mb-6">
-          <label className="block text-sm font-bold mb-2 text-left" htmlFor="description">Description:</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            maxLength="1500"
-            className="shadow appearance-none border rounded w-full h-32 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
+          <label className="block text-sm font-bold mb-2 text-left" htmlFor="receipt">Upload Receipt:</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="text-white"
           />
+          {uploading && <p className="text-yellow-400 mt-2">Uploading image...</p>}
+          {imageUrl && (<div className=' flex justify-center'>
+              <img src={imageUrl} alt="Uploaded Receipt" className="mt-4 w-[30%] h-[200px] max-w-sm rounded" />
+            </div>
+          
+          )}
         </div>
 
         {/* Submit Button */}
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="bg-[#00a97c] text-white rounded-full border-2 border-[#00a97c] hover:bg-[#282828]  hover:border-white  font-bold py-2 w-full rounded transition duration-300"
             disabled={loading}
+            className="bg-[#00a97c] text-white rounded-full border-2 border-[#00a97c] hover:bg-[#282828]  hover:border-white font-bold py-2 w-full rounded transition duration-300"
           >
-            {loading ? 'Submitting...' : 'Submit'}
+            {loading ? 'Submitting...' : 'Confirm Order'}
           </button>
         </div>
       </form>

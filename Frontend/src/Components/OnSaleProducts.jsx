@@ -5,8 +5,9 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import SkeletonLoader from './SkeletonLoader'; 
 
-export default function TrendingProducts({loggedInUserId}) {
-console.log("userid in trendinfproducts:", loggedInUserId)
+
+export default function OnSaleProducts({loggedInUserId}) {
+    console.log("userid in Onsaleproducts:", loggedInUserId)
   useEffect(() => {
     AOS.init({
       duration: 1200,
@@ -28,7 +29,7 @@ console.log("userid in trendinfproducts:", loggedInUserId)
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:5000/trending_products')
+    fetch('http://localhost:5000/onsale_products')
       .then(response => response.json())
       .then(data => {
         setProductsData({ productsData: data });
@@ -91,7 +92,7 @@ console.log("userid in trendinfproducts:", loggedInUserId)
   };
   return (
     <div className="mx-4 sm:mx-4 md:mx-6 lg:mx-14 mb-10">
-      <h1 className="text-3xl font-bold mt-12 mb-10">Trending Products</h1>
+      <h1 className="text-3xl font-bold mt-12 mb-10">On Sale Products</h1>
       {/* Search Bar */}
       {/* <div className="flex justify-end mb-4">
         <input
@@ -124,7 +125,7 @@ console.log("userid in trendinfproducts:", loggedInUserId)
                       onLoad={() => handleImageLoad(product.id)} onError={() => handleImageError(product.id)}/>
                   </div>
                   <span className="font-bold text-lg">Name: <span className="text-base font-medium">{product.name}</span></span>
-                  <span className="font-bold">Price: <span className="text-base font-medium">{product.price}</span></span>
+                  <span className="font-bold flex gap-2">Price: <span className="text-base font-medium line-through text-red-600">{product.price}</span><span>{product.New_price}</span></span>
                   <span className="font-bold">Stock: <span className="text-base font-medium">{product.stock}</span></span>
 
                   {/* Add to Cart Icon */}

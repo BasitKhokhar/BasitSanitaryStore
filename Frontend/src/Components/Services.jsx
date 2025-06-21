@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Loader from './Loader';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Services = () => {
       
   useEffect(() => {
@@ -18,8 +20,8 @@ const Services = () => {
       useEffect(() => {
         setLoading(true);
         const apiEndpoints = [
-          { key: 'servicesData', url: 'http://localhost:5000/services' },
-          { key: 'plumbersData', url: 'http://localhost:5000/plumbers' }
+          { key: 'servicesData', url: `${API_BASE_URL}/services` },
+          { key: 'plumbersData', url: `${API_BASE_URL}/plumbers` }
         ];
         Promise.all(
           apiEndpoints.map((endpoint) =>

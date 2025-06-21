@@ -1,34 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import CheckoutForm from './Login/Checkoutform';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Payment_methods from './Payment_methods';
 
 const Checkout = () => {
-
-  useEffect(() => {
-    AOS.init({
-      duration: 1200,
-    });
-  }, []);
-
   const location = useLocation();
-  const { cartItems, totalAmount } = location.state || { cartItems: [], totalAmount: 0 };
+  const navigate = useNavigate();
 
-  // State to store shipping cost
+  const { cartItems, totalAmount, loggedInUserId, userName } = location.state || { cartItems: [], totalAmount: 0 };
   const [shippingCost, setShippingCost] = useState(0);
 
-  // Calculate shipping charges based on total amount
   useEffect(() => {
-    if (totalAmount < 200000) {
-      setShippingCost(3000);  // Add 3000 Rupees shipping cost if total is less than 200000
-    } else {
-      setShippingCost(0);  // Free shipping if total amount is 200000 or more
-    }
+    AOS.init({ duration: 1200 });
+  }, []);
+
+  useEffect(() => {
+    setShippingCost(totalAmount < 200000 ? 3000 : 0);
   }, [totalAmount]);
 
-  // Calculate final total including shipping cost
   const finalTotal = totalAmount + shippingCost;
+
+  const handleOrderSubmit = async () => {
+    const orderData = {
+      orderId: Date.now(),
+      userId: loggedInUserId,
+      userName: userName,
+      totalAmount,
+      shippingCost,
+      finalTotal,
+      totalItems: cartItems.length,
+      orderDate: new Date().toISOString(),
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        alert('Order successfully stored!');
+        navigate('/');
+      } else {
+        throw new Error('Failed to store order data.');
+      }
+    } catch (error) {
+      console.error('Error storing order:', error);
+      alert('Error storing order data. Please try again.');
+    }
+  };
 
   if (!cartItems.length) {
     return <div>Your cart is empty.</div>;
@@ -36,12 +59,7 @@ const Checkout = () => {
 
   return (
     <div className="bg-lightgray w-full mb-10">
-      {/* <h1 className="text-2xl font-bold mt-24 mb-4 text-center text-[#282828]" data-aos="fade-up">Checkout</h1> */}
-      <div className="flex flex-col-reverse gap-6 px-3 justify-center sm:flex-col-reverse sm:px-3 md:flex-col-reverse md:px-6 lg:flex-row lg:px-12 mt-24">
-        <div className="w-full" data-aos="fade-up">
-          <p className=' text-left text-semibold my-1'>Fill this form, if you want delivery.</p>
-          <CheckoutForm />
-        </div>
+      <div className="flex flex-col gap-6 px-3 justify-center sm:flex-col sm:px-3 md:flex-col md:px-6 lg:flex-row lg:px-12 mt-24">
         <div className="w-full" data-aos="fade-up">
           <div className="overflow-y-auto bg-white scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-100" style={{ maxHeight: '70vh' }}>
             <table className="w-full table-auto border-collapse">
@@ -57,7 +75,7 @@ const Checkout = () => {
                 {cartItems.map((item, index) => (
                   <tr key={item.cart_id} className="border-t border-b">
                     <td className="p-4 text-[#282828] text-center">{index + 1}</td>
-                    <td className=" text-[#282828]">
+                    <td className="text-[#282828]">
                       <div className="flex flex-col gap-4 items-center sm:flex-col md:flex-row lg:flex-row">
                         <div>
                           <img src={item.image_url} alt={item.name} className="w-12 h-auto" />
@@ -75,8 +93,6 @@ const Checkout = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Display total amount and shipping cost */}
           <div className="mt-4 flex px-4 justify-between">
             <h2 className="text-lg font-bold text-[#282828]">Sub-total Amount: </h2>
             <h2 className="font-semibold">{totalAmount} Rupees</h2>
@@ -89,15 +105,29 @@ const Checkout = () => {
             <h2 className="text-lg font-bold text-[#282828]">Total Amount: </h2>
             <h2 className="font-semibold">{finalTotal} Rupees</h2>
           </div>
-
-          <div className="text-right mr-5 mt-8 mb-1">
-            <Link to="/">
-              <button className="bg-[#282828] text-white font-bold rounded-full px-12 border-2 border-black hover:bg-white hover:text-[#282828] hover:border-[#282828] transition duration-500">
-                Confirm Purchase
-              </button>
-            </Link>
-          </div>
+          {/* <div className="text-right mr-5 mt-8 mb-1">
+            <button
+              onClick={handleOrderSubmit}
+              className="bg-[#282828] text-white font-bold rounded-full px-12 border-2 border-black hover:bg-white hover:text-[#282828] hover:border-[#282828] transition duration-500"
+            >
+              Confirm Order
+            </button>
+          </div> */}
         </div>
+        <div className="w-full" data-aos="fade-up">
+          <p className='text-left text-semibold my-1'>Fill this form, if you want delivery.</p>
+          <CheckoutForm
+            cartItems={cartItems}
+            totalAmount={totalAmount}
+            shippingCost={shippingCost}
+            finalTotal={finalTotal}
+            userId={loggedInUserId}
+            userName={userName}
+          />
+        </div>
+      </div>
+      <div>
+        <Payment_methods />
       </div>
     </div>
   );

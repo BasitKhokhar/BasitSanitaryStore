@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "aos": "^2.3.4",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
     "react-animate-on-scroll": "^2.1.9",
     "tailwind-scrollbar": "^3.1.0",
     "typed.js": "^2.1.0"
