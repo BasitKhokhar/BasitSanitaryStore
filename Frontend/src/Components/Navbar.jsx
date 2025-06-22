@@ -4,7 +4,7 @@ import { FaShoppingCart, FaUser } from 'react-icons/fa';
 import Cart from './Cart';
 import LoginForm from './Login/Login';
 import SignupForm from './Login/Signup';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const Navbar = ({ userId }) => {
   const [logoimage, setLogoImage] = useState();
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +20,7 @@ const Navbar = ({ userId }) => {
   const navbarRef = useRef(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/logo_image')
+    fetch(`${API_BASE_URL}/logo_image`)
       .then(response => response.json())
       .then(data => setLogoImage(data))
       .catch(error => console.error('Error fetching logo image:', error));
