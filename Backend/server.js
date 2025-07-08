@@ -363,7 +363,7 @@ app.get("/onsale_products", async (req, res) => {
   }
 });
 
-//  About page realted APIS //
+//  About page realted APIS 
 app.get("/about", async (req, res) => {
   try {
     const aboutData = await About.findAll();
