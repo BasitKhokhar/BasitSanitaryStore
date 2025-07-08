@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(255),
             allowNull: false,
             validate: {
-                isUrl: true, // Ensures it's a valid URL
+                isUrl: true, 
             },
         },
         number: {
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         tableName: "payment_methods",
-        timestamps: false,  // Disable timestamps if not needed
+        timestamps: false, 
     });
 
     return PaymentMethod;

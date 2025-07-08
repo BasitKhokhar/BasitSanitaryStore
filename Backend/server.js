@@ -15,7 +15,8 @@ app.use(bodyParser.json());
 const { sequelize } = require('./models');
 const { LogoImage, HomeParagraph, User, SliderImage, Categories, Subcategories, Products,
   TrendingProduct, OnSaleProduct, Homevideos, CustomerSupportOption, Brand, About, AboutImage, AboutUs, AboutMission,
-  PaymentMethod, Service, MapImage, Plumber, ContactForm, Cart } = require('./models');
+  PaymentMethod, Service, MapImage, Plumber, ContactForm, Cart,Social_Icons,ContactList,
+FooterLinks,FooterInfo } = require('./models');
 
 
 // firebase attachemnt//
@@ -496,34 +497,70 @@ app.post('/orders', (req, res) => {
 });
 
 // footer APIS start //
-app.get('/contact_list', (req, res) => {
-  const query = 'SELECT * FROM contact_list'
-  db.query(query, (err, result) => {
-    if (err) throw err;
-    res.json(result)
-  })
-})
-app.get('/footer_links', (req, res) => {
-  const query = 'SELECT footer_links_list, routes FROM footer_links';
-  db.query(query, (err, result) => {
-    if (err) throw err;
-    res.json(result);
-  });
-});
 
-app.get('/footer_info', (req, res) => {
-  const query = 'SELECT footer_info_list, routes FROM footer_info';
-  db.query(query, (err, result) => {
-    if (err) throw err;
-    res.json(result);
-  });
+// app.get('/contact_list', (req, res) => {
+//   const query = 'SELECT * FROM contact_list'
+//   db.query(query, (err, result) => {
+//     if (err) throw err;
+//     res.json(result)
+//   })
+// })
+app.get('/contact_list', async (req, res) => {
+  try {
+    const ContactListItems = await ContactList.findAll();
+    res.json(ContactListItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
-app.get('/social_icons', (req, res) => {
-  const query = 'SELECT icons, routes FROM social_icons';
-  db.query(query, (err, result) => {
-    if (err) throw err;
-    res.json(result);
-  });
+// app.get('/footer_links', (req, res) => {
+//   const query = 'SELECT footer_links_list, routes FROM footer_links';
+//   db.query(query, (err, result) => {
+//     if (err) throw err;
+//     res.json(result);
+//   });
+// });
+app.get('/footer_links', async (req, res) => {
+  try {
+    const FooterLinksItems = await FooterLinks.findAll();
+    res.json(FooterLinksItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+app.get('/footer_info', async (req, res) => {
+  try {
+    const FooterInfoItems = await FooterInfo.findAll();
+    res.json(FooterInfoItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+// app.get('/footer_info', (req, res) => {
+//   const query = 'SELECT footer_info_list, routes FROM footer_info';
+//   db.query(query, (err, result) => {
+//     if (err) throw err;
+//     res.json(result);
+//   });
+// });
+// app.get('/social_icons', (req, res) => {
+//   const query = 'SELECT icons, routes FROM social_icons';
+//   db.query(query, (err, result) => {
+//     if (err) throw err;
+//     res.json(result);
+//   });
+// });
+app.get('/social_icons', async (req, res) => {
+  try {
+    const SocailIcons = await Social_Icons.findAll();
+    res.json(SocailIcons);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 // footer Apis end //
 
