@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function Footer() {
   
   useEffect(() => {
@@ -23,11 +23,11 @@ export default function Footer() {
 
   useEffect(() => {
     const apiEndpoints = [
-      { key: 'logoData', url: 'http://localhost:5000/logo_image' },
-      { key: 'contactListData', url: 'http://localhost:5000/contact_list' },
-      { key: 'FooterLinksData', url: 'http://localhost:5000/footer_links' },
-      { key: 'FooterInfoData', url: 'http://localhost:5000/footer_info' },
-      { key: 'socialIconsData', url: 'http://localhost:5000/social_icons' }
+      { key: 'logoData', url: `${API_BASE_URL}/logo_image` },
+      { key: 'contactListData', url: `${API_BASE_URL}/contact_list` },
+      { key: 'FooterLinksData', url: `${API_BASE_URL}/footer_links` },
+      { key: 'FooterInfoData', url: `${API_BASE_URL}/footer_info` },
+      { key: 'socialIconsData', url: `${API_BASE_URL}/social_icons` }
     ];
     Promise.all(
       apiEndpoints.map((endpoint) =>

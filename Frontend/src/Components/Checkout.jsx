@@ -4,6 +4,7 @@ import CheckoutForm from './Login/Checkoutform';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Payment_methods from './Payment_methods';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Checkout = () => {
   const location = useLocation();
@@ -35,7 +36,7 @@ const Checkout = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/orders', {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),

@@ -4,7 +4,7 @@ import Loader from './Loader';
 import FormComponent from './Login/conatctForm'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function Contact() {
 
   useEffect(() => {
@@ -21,8 +21,8 @@ export default function Contact() {
   useEffect(() => {
     setLoading(true);
     const apiEndpoints = [
-      { key: 'mapImageData', url: 'http://localhost:5000/map_image' },
-      { key: 'contactListData', url: 'http://localhost:5000/contact_list' },
+      { key: 'mapImageData', url: `${API_BASE_URL}/map_image` },
+      { key: 'contactListData', url: `${API_BASE_URL}/contact_list` },
     ];
     Promise.all(
       apiEndpoints.map((endpoint) =>

@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import SkeletonLoader from './SkeletonLoader';  // Import SkeletonLoader
+import SkeletonLoader from './SkeletonLoader';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Subcategories() {
-
- // this useeffesct is for Animation //
- useEffect(() => {
-  AOS.init({
-    duration: 1200,
-  });
-}, []);
+  useEffect(() => {
+    AOS.init({
+      duration: 1200,
+    });
+  }, []);
 
   const { categoryId } = useParams();
   const [subcategories, setSubcategories] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  const [imageLoading, setImageLoading] = useState({}); 
+  const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState({});
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:5000/categories/${categoryId}/subcategories`)
+    fetch(`${API_BASE_URL}/categories/${categoryId}/subcategories`)
       .then(response => response.json())
       .then(data => {
         setSubcategories(data);
@@ -72,8 +71,8 @@ export default function Subcategories() {
                 <div className="bg-gray-300 animate-pulse w-full h-full absolute top-0 left-0"></div>
               )}
               <img src={item.image_url} alt={item.name} className="w-full h-full object-cover"
-                style={imageLoading[item.id] === false ? {} : { display: 'none' }} 
-                onLoad={() => handleImageLoad(item.id)} onError={() => handleImageError(item.id)}/>
+                style={imageLoading[item.id] === false ? {} : { display: 'none' }}
+                onLoad={() => handleImageLoad(item.id)} onError={() => handleImageError(item.id)} />
             </div>
             <div className='mt-2'>
               <h2 className='text-center text-lg font-medium'>{item.name}</h2>

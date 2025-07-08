@@ -11,7 +11,7 @@ const ProductModal = ({ product, onClose, onAddToCart, userid }) => {
       ...product,
       selectedColor,
       quantity: 1,
-      user_id: userid, // Include userId here
+      user_id: userid, 
     };
     
     try {

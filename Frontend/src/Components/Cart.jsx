@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Cart = ({ loggedInUserId, closeCart }) => {
   const [cartItems, setCartItems] = useState([]);
@@ -17,7 +18,7 @@ const Cart = ({ loggedInUserId, closeCart }) => {
     });
     const fetchCartItems = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/cart/${loggedInUserId}`);
+        const response = await fetch(`${API_BASE_UR}/cart/${loggedInUserId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch cart items');
         }
@@ -33,7 +34,7 @@ const Cart = ({ loggedInUserId, closeCart }) => {
     console.log("userid in cart:" , loggedInUserId)
     const fetchUserName = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/${loggedInUserId}`);
+        const response = await fetch(`${API_BASE_UR}/api/users/${loggedInUserId}`);
         const data = await response.json();
         if (response.ok) {
           setUserName(data.userName);
@@ -62,7 +63,7 @@ const Cart = ({ loggedInUserId, closeCart }) => {
   // Handle removing an item from the cart
   const handleRemoveFromCart = async (cartId) => {
     try {
-      const response = await fetch(`http://localhost:5000/cart/${loggedInUserId}/${cartId}`, {
+      const response = await fetch(`${API_BASE_UR}/cart/${loggedInUserId}/${cartId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -79,7 +80,7 @@ const Cart = ({ loggedInUserId, closeCart }) => {
     if (newQuantity < 1) return; // Prevent quantity from going below 1
 
     try {
-      const response = await fetch(`http://localhost:5000/cart/${cartId}`, {
+      const response = await fetch(`${API_BASE_UR}/cart/${cartId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantity: newQuantity, user_id: loggedInUserId }),

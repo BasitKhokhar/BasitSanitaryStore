@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function Payment_methods() {
   const[payment, setPayment]= useState()
   useEffect(()=>{
-     fetch("http://localhost:5000/payment_methods")
+     fetch(`${API_BASE_URL}/payment_methods`)
      .then(response =>response.json())
      .then(data => setPayment(data))
      .catch(error => console.error("the error is",error))
