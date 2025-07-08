@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         tableName: "cart",
-        timestamps: true, // Enables Sequelize timestamps
+        timestamps: true, 
         createdAt: "created_at",
         updatedAt: "updated_at",
     });
