@@ -4,6 +4,7 @@ import Loader from './Loader';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import SkeletonLoader from './SkeletonLoader'; 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function TrendingProducts({loggedInUserId}) {
 console.log("userid in trendinfproducts:", loggedInUserId)
@@ -28,7 +29,7 @@ console.log("userid in trendinfproducts:", loggedInUserId)
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:5000/trending_products')
+    fetch(`${API_BASE_URL}/trending_products`)
       .then(response => response.json())
       .then(data => {
         setProductsData({ productsData: data });
