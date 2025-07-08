@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Social_Icons = sequelize.define('SocialIcon', {
+  const Social_Icons = sequelize.define('Social_Icons', {
     id: {
       type: DataTypes.INTEGER(10),
       autoIncrement: true,

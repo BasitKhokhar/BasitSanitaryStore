@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const FooterLinks = sequelize.define('FooterLink', {
+  const FooterLinks = sequelize.define('FooterLinks', {
     id: {
       type: DataTypes.INTEGER(10),
       autoIncrement: true,
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     tableName: 'footer_links',
-    timestamps: false, // No created_at or updated_at fields
+    timestamps: false,
   });
 
   return FooterLinks;
