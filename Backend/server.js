@@ -252,7 +252,7 @@ app.get('/cart/:user_id', async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch cart items", error });
   }
 });
-// PUT /cart/:id: Update the quantity of a product in the cart for a specific user
+// PUT /cart/:id: Update the quantity of a product in the cart for a specific users
 app.put('/cart/:id', async (req, res) => {
   try {
     const { quantity, user_id } = req.body;

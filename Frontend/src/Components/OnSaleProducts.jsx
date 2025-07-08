@@ -34,17 +34,18 @@ export default function OnSaleProducts({loggedInUserId}) {
       .then(data => {
         setProductsData({ productsData: data });
         setLoading(false);
+        console.log("onsaleproducts",data)
       })
       .catch(error => {
         console.error('Error fetching products:', error);
         setLoading(false);
       });
   }, []);
-
+  
   useEffect(() => {
     setFilteredProducts(
       productsdata.productsData.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        product.product.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [searchTerm, productsdata.productsData]);
@@ -120,13 +121,13 @@ export default function OnSaleProducts({loggedInUserId}) {
                     {imageLoading[product.id] !== false && (
                       <div className="bg-gray-300 animate-pulse w-full h-full absolute top-0 left-0"></div> // Skeleton loader
                     )}
-                    <img src={product.image_url} alt="Product Image" className="w-full h-full object-cover"
+                    <img src={product.product.image_url} alt="Product Image" className="w-full h-full object-cover"
                       style={imageLoading[product.id] === false ? {} : { display: 'none' }} // Hide image until loaded
                       onLoad={() => handleImageLoad(product.id)} onError={() => handleImageError(product.id)}/>
                   </div>
-                  <span className="font-bold text-lg">Name: <span className="text-base font-medium">{product.name}</span></span>
-                  <span className="font-bold flex gap-2">Price: <span className="text-base font-medium line-through text-red-600">{product.price}</span><span>{product.New_price}</span></span>
-                  <span className="font-bold">Stock: <span className="text-base font-medium">{product.stock}</span></span>
+                  <span className="font-bold text-lg">Name: <span className="text-base font-medium">{product.product.name}</span></span>
+                  <span className="font-bold flex gap-2">Price: <span className="text-base font-medium line-through text-red-600">{product.product.price}</span><span>{product.new_price}</span></span>
+                  <span className="font-bold">Stock: <span className="text-base font-medium">{product.product.stock}</span></span>
 
                   {/* Add to Cart Icon */}
                   {hoveredProduct === product.id && (
