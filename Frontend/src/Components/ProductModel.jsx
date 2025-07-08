@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ProductModal = ({ product, onClose, onAddToCart, userid }) => {
-  console.log('userid in productmodel',userid)
+  console.log('data coming in productmodel',userid,product)
   // const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
 
@@ -15,7 +15,7 @@ const ProductModal = ({ product, onClose, onAddToCart, userid }) => {
     };
     
     try {
-      const response = await fetch('http://localhost:5000/cart', {
+      const response = await fetch(`${API_BASE_URL}/cart`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productWithOptions),
