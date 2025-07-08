@@ -64,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
             onUpdate: 'CASCADE',
         },
         new_price: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         added_at: {
