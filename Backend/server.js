@@ -305,9 +305,27 @@ app.get('/products', async (req, res) => {
   }
 });
 // This APi is for trnding products //
+// app.get("/trending_products", async (req, res) => {
+//   try {
+//     const trendingProducts = await TrendingProduct.findAll(); // Fetch all trending products
+//     res.json(trendingProducts);
+//   } catch (error) {
+//     console.error("Error fetching trending products:", error);
+//     res.status(500).json({ error: "Database error" });
+//   }
+// });
 app.get("/trending_products", async (req, res) => {
   try {
-    const trendingProducts = await TrendingProduct.findAll(); // Fetch all trending products
+    const trendingProducts = await TrendingProduct.findAll({
+      include: [
+        {
+          model: Products,
+          as: 'product', // this must match the alias used in your association
+          attributes: ['id', 'name', 'image_url', 'price', 'stock', 'subcategory_id', 'created_at', 'updated_at'] // optional: limit returned fields
+        }
+      ],
+    });
+
     res.json(trendingProducts);
   } catch (error) {
     console.error("Error fetching trending products:", error);
@@ -315,15 +333,36 @@ app.get("/trending_products", async (req, res) => {
   }
 });
 // APi for Onsale //
+// app.get("/onsale_products", async (req, res) => {
+//   try {
+//     const products = await OnSaleProduct.findAll();
+//     res.json(products);
+//   } catch (error) {
+//     console.error("Error fetching on-sale products:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+const { OnSaleProduct, Products } = require('../models'); // adjust path as needed
+
 app.get("/onsale_products", async (req, res) => {
   try {
-    const products = await OnSaleProduct.findAll();
+    const products = await OnSaleProduct.findAll({
+      include: [
+        {
+          model: Products,
+          as: 'product', // must match the alias defined in association
+          attributes: ['id', 'name', 'image_url', 'price', 'stock', 'subcategory_id', 'created_at', 'updated_at']
+        }
+      ]
+    });
+
     res.json(products);
   } catch (error) {
     console.error("Error fetching on-sale products:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 //  About page realted APIS //
 app.get("/about", async (req, res) => {
   try {
