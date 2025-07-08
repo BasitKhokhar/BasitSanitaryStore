@@ -4,7 +4,7 @@ import Loader from './Loader';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import SkeletonLoader from './SkeletonLoader'; 
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function OnSaleProducts({loggedInUserId}) {
     console.log("userid in Onsaleproducts:", loggedInUserId)
@@ -29,7 +29,7 @@ export default function OnSaleProducts({loggedInUserId}) {
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:5000/onsale_products')
+    fetch(`${API_BASE_URL}/onsale_products`)
       .then(response => response.json())
       .then(data => {
         setProductsData({ productsData: data });

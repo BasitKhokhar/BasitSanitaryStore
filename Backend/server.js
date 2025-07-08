@@ -342,8 +342,6 @@ app.get("/trending_products", async (req, res) => {
 //     res.status(500).json({ error: "Internal Server Error" });
 //   }
 // });
-const { OnSaleProduct, Products } = require('../models'); // adjust path as needed
-
 app.get("/onsale_products", async (req, res) => {
   try {
     const products = await OnSaleProduct.findAll({
